@@ -1,15 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Image } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './style';
 import Header from '../../component/header';
-import Search from '../../component/searchInput';
 import ChatModal from '../../component/chatModal';
 import userData from '../../jsonData';
 import Images from '../../assets';
 import { getRandomColor } from '../../component/randomcolor';
-
+import Searchscreen from '../../component/searchInput';
 
 type User = {
     id: string;
@@ -25,6 +25,7 @@ type RootStackParamList = {
 const HomeScreen: React.FC = () => {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [chattedUsers, setChattedUsers] = useState<User[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     useEffect(() => {
@@ -50,7 +51,6 @@ const HomeScreen: React.FC = () => {
     };
 
     const handleStartChat = () => {
-        // Functionality to start a new chat
         toggleModal();
     };
 
@@ -67,18 +67,23 @@ const HomeScreen: React.FC = () => {
                 <View style={[styles.initialsContainer, { backgroundColor: randomBackgroundColor }]}>
                     <Text style={styles.initialsText}>{`${firstInitial}${lastInitial}`}</Text>
                 </View>
-                <Text >{`${item.firstName} ${item.lastName}`}</Text>
+                <Text>{`${item.firstName} ${item.lastName}`}</Text>
             </TouchableOpacity>
         );
     };
 
-    const chatStartVisible = chattedUsers.length === 0; // Show chat start container if no chatted users
+    // Filter users based on search query
+    const filteredUsers = chattedUsers.filter(user =>
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const chatStartVisible = chattedUsers.length === 0;
 
     return (
         <View style={{ flex: 1 }}>
             <Header />
             <View style={styles.profilecontainer}>
-                <Search />
+                <Searchscreen searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                 {chatStartVisible && (
                     <View style={styles.chatStart}>
                         <View style={styles.chatview}>
@@ -92,11 +97,13 @@ const HomeScreen: React.FC = () => {
                         </TouchableOpacity>
                     </View>
                 )}
-                <FlatList
-                    data={chattedUsers}
-                    renderItem={renderProfile}
-                    keyExtractor={(item) => item.id}
-                />
+                <ScrollView>
+                    <FlatList
+                        data={filteredUsers}
+                        renderItem={renderProfile}
+                        keyExtractor={(item) => item.id}
+                    />
+                </ScrollView>
             </View>
             <ChatModal visible={modalVisible} onClose={toggleModal} />
         </View>
@@ -104,3 +111,10 @@ const HomeScreen: React.FC = () => {
 };
 
 export default HomeScreen;
+
+
+
+
+
+
+
