@@ -113,7 +113,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     padding: 5,
-
   },
   optionText: {
     marginHorizontal: 10,
@@ -122,11 +121,11 @@ const styles = StyleSheet.create({
   },
   emojiText: {
     position: 'absolute',
-    right: 10, 
-    top: 5, 
+    right: 10,
+    top: 5,
     fontSize: 20,
   },
-
+  
 });
 
 export default styles;

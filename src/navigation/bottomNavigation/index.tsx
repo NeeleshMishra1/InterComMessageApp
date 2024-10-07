@@ -38,7 +38,7 @@ const Bottomtab = () => {
           );
         },
         tabBarActiveTintColor: '#46A4BA',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: 'black',
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />

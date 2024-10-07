@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import styles from './style';
 import Images from '../../assets';
-import { GiftedChat, IMessage, InputToolbar, Message } from 'react-native-gifted-chat';
+import { GiftedChat, IMessage, InputToolbar, Message, Send } from 'react-native-gifted-chat';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,17 +25,19 @@ type ChatScreenProps = {
 
 type MessagesState = IMessage[];
 
-
-
-const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
+const ChatScreen = ({ route }: ChatScreenProps) => {
     const [messages, setMessages] = React.useState<MessagesState>([]);
     const [modalVisible, setModalVisible] = React.useState<boolean>(false);
-    const [selectedMessage, setSelectedMessage] = React.useState<IMessage | null>(null);
+    const [selectedMessage, setSelectedMessage]: any = React.useState<IMessage | null>(null);
+    const [emojiArrayVisible, setEmojiArrayVisible] = React.useState<boolean>(false);
+    
     const { user, onDelete } = route.params; // Destructure onDelete from route params
 
     const firstInitial = user.firstName.charAt(0).toUpperCase();
     const lastInitial = user.lastName.charAt(0).toUpperCase();
     const initials = `${firstInitial}${lastInitial}`;
+
+    const emojiArray = ['😊', '😂', '❤️', '👍', '🙌', '😢', '🔥', '😎'];
 
     const loadMessages = async () => {
         try {
@@ -100,30 +102,31 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
                     marginHorizontal: 8,
                     marginTop: 5,
                     borderTopWidth: 0,
-                }}
+                }} 
             />
         );
     };
 
     const handleMessagePress = (message: IMessage) => {
         setSelectedMessage(message);
+        setEmojiArrayVisible(true); // Show the emoji array
     };
 
-
     const renderMessage = (props: { currentMessage: IMessage }) => {
-        const currentMessage = props.currentMessage;
+        const currentMessage: any = props.currentMessage;
         const emoji = currentMessage.emoji || ''; // Get emoji from message if it exists
 
         return (
             <TouchableOpacity onPress={() => handleMessagePress(currentMessage)}>
                 <Message {...props} />
-                {selectedMessage && selectedMessage._id === currentMessage._id && (
+                {selectedMessage && selectedMessage._id === currentMessage._id && emojiArrayVisible && (
                     <View style={styles.messageOptions}>
-                        <TouchableOpacity onPress={() => handleEmojiSelect(currentMessage._id, '😊')}>
-                            <Text style={styles.optionText}>😊</Text>
-                            <Text style={styles.optionText}>😁</Text>
-                            <Text style={styles.optionText}>😂</Text>
-                        </TouchableOpacity>
+                        {/* Display emoji array */}
+                        {emojiArray.map((emoji, index) => (
+                            <TouchableOpacity key={index} onPress={() => handleEmojiSelect(currentMessage._id, emoji)}>
+                                <Text style={styles.optionText}>{emoji}</Text>
+                            </TouchableOpacity>
+                        ))}
                         <TouchableOpacity onPress={() => handleDeleteMessage(selectedMessage._id)}>
                             <Text style={styles.optionText}>Delete</Text>
                         </TouchableOpacity>
@@ -136,25 +139,38 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         );
     };
 
-    //  handle message deletion
     const handleDeleteMessage = async (messageId: string) => {
         const updatedMessages = messages.filter(message => message._id !== messageId);
         setMessages(updatedMessages);
         await AsyncStorage.setItem(`messages_${user.id}`, JSON.stringify(updatedMessages));
         setSelectedMessage(null); // Reset selected message
+        setEmojiArrayVisible(false); 
     };
 
-    // Function to handle emoji selection
+    //  handle emoji selection
     const handleEmojiSelect = async (messageId: string, emoji: string) => {
         const updatedMessages = messages.map(message => {
             if (message._id === messageId) {
-                return { ...message, emoji }; // Add the emoji to the selected message
+                return { ...message, emoji }; // Add the emoji to the message
             }
             return message;
         });
         setMessages(updatedMessages);
         await AsyncStorage.setItem(`messages_${user.id}`, JSON.stringify(updatedMessages));
         setSelectedMessage(null); // Reset selected message
+        setEmojiArrayVisible(false); // Hide the emoji array after selection
+    };
+
+    const renderSend = (props: any) => {
+        return (
+            <Send {...props} containerStyle={{}}>
+                <Image
+                    source={Images.sendIcon}
+                    style={{ marginRight: 10, marginBottom: 5, width: 35, height: 35 }}
+                    resizeMode="center"
+                />
+            </Send>
+        );
     };
 
     return (
@@ -184,8 +200,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
                     }}
                     alwaysShowSend
                     scrollToBottom
+                    loadEarlier={true}
                     renderInputToolbar={renderInputToolBar}
-                    renderMessage={renderMessage} 
+                    renderMessage={renderMessage}
+                    renderSend={renderSend}
                 />
             </View>
             <ChatScreenModal visible={modalVisible} onClose={closeModal} onDelete={deleteChat} />
@@ -194,3 +212,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
 };
 
 export default ChatScreen;
+
+
+
+

@@ -6,7 +6,6 @@ import Bottomtab from '../bottomNavigation';
 import Splace from '../../screens/splaceScreen';
 import Searchscreen from '../../screens/searchScreen';
 import ChatScreen from '../../screens/ChatScreen';
-
 type RootStackParamList = {
   splace: undefined;
   bottom: undefined;

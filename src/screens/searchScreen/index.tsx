@@ -7,7 +7,6 @@ import styles from './styles';
 import userData from '../../jsonData';
 import { getRandomColor } from '../../component/randomcolor';
 
-
 type RootStackParamList = {
   bottom: undefined;
   Chat: { user: User };
@@ -19,7 +18,7 @@ type User = {
   phoneNumber: string;
 };
 
-const SearchPage: React.FC = () => {
+const SearchPage = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredData, setFilteredData] = useState<User[]>([]);

@@ -36,8 +36,6 @@ const styles = StyleSheet.create({
         width:40,
         height:40,
       },
-   
-
 });
 
 export default styles;

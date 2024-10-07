@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, NavigationProp, useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './style';
 import Header from '../../component/header';
@@ -22,11 +21,12 @@ type RootStackParamList = {
     Chat: { user: User; onDelete: (userId: string) => void };
 };
 
-const HomeScreen: React.FC = () => {
+const HomeScreen= () => {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [chattedUsers, setChattedUsers] = useState<User[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const isFocused =useIsFocused()
 
     useEffect(() => {
         const loadChattedUsers = async () => {
@@ -40,7 +40,7 @@ const HomeScreen: React.FC = () => {
         };
 
         loadChattedUsers();
-    }, []);
+    }, [isFocused]);
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);

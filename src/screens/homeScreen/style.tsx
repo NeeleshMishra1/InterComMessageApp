@@ -3,16 +3,16 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
     container1: {
         flex: 1,
-        backgroundColor: "#E6EDF3"
+        backgroundColor: "#E6EDF3",
     },
     container2: {
         flex: 1,
         padding: 20,
     },
     chatStart: {
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        flex: 1,
         paddingTop: 180,
     },
     noChatText: {
@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 20,
         fontWeight: "500"
-    }, chatImage: {
+    }, 
+    chatImage: {
         width: 170,
         height: 170,
         resizeMode: "contain"
@@ -47,7 +48,6 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         padding: 15,
         marginTop: 5,
-        borderBottomWidth: 1,
         borderColor: "grey",
         shadowColor: "#000", // iOS shadow
         shadowOffset: {
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     },
     profilecontainer: {
         padding: 10
-    }
+    },
 });
 
 export default styles;
