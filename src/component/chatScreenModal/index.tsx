@@ -19,9 +19,9 @@ const ChatScreenModal = ({ visible, onClose, onDelete }: ChatScreenModalProps) =
             visible={visible}
             onRequestClose={onClose}
         >
-            <TouchableOpacity style={styles.modalOverlay} onPress={onClose}>
+            <View style={styles.modalOverlay} >
                 <View style={styles.modalContent}>
-                    <TouchableOpacity>
+                    <TouchableOpacity >
                         <View style={styles.modalContent1}>
                             <View style={styles.modalimage}>
                                 <Image
@@ -57,7 +57,7 @@ const ChatScreenModal = ({ visible, onClose, onDelete }: ChatScreenModalProps) =
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={onDelete}> 
+                    <TouchableOpacity onPress={onDelete||onClose}> 
                         <View style={styles.modalContent3}>
                             <View style={styles.modalimage}>
                                 <Image
@@ -69,7 +69,7 @@ const ChatScreenModal = ({ visible, onClose, onDelete }: ChatScreenModalProps) =
                         </View>
                     </TouchableOpacity>
                 </View>
-            </TouchableOpacity>
+            </View>
         </Modal>
     );
 };

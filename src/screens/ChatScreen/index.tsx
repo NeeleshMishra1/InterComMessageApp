@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Modal, FlatList } from 'react-native';
 import styles from './style';
 import Images from '../../assets';
 import { GiftedChat, IMessage, InputToolbar, Message, Send } from 'react-native-gifted-chat';
@@ -27,11 +27,11 @@ type MessagesState = IMessage[];
 
 const ChatScreen = ({ route }: ChatScreenProps) => {
     const [messages, setMessages] = React.useState<MessagesState>([]);
-    const [modalVisible, setModalVisible] = React.useState<boolean>(false);
-    const [selectedMessage, setSelectedMessage]: any = React.useState<IMessage | null>(null);
-    const [emojiArrayVisible, setEmojiArrayVisible] = React.useState<boolean>(false);
-    
-    const { user, onDelete } = route.params; // Destructure onDelete from route params
+    const [modalVisible, setModalVisible] = React.useState<boolean>(false); // Emoji/Message modal
+    const [chatModalVisible, setChatModalVisible] = React.useState<boolean>(false); // Chat delete modal
+    const [selectedMessage, setSelectedMessage]:any = React.useState<IMessage | null>(null);
+
+    const { user, onDelete } = route.params; 
 
     const firstInitial = user.firstName.charAt(0).toUpperCase();
     const lastInitial = user.lastName.charAt(0).toUpperCase();
@@ -74,7 +74,8 @@ const ChatScreen = ({ route }: ChatScreenProps) => {
         navigation.navigate('bottom');
     };
 
-    const openModal = () => {
+    const openEmojiDeleteModal = (message: IMessage) => {
+        setSelectedMessage(message);
         setModalVisible(true);
     };
 
@@ -82,12 +83,20 @@ const ChatScreen = ({ route }: ChatScreenProps) => {
         setModalVisible(false);
     };
 
+    const openChatModal = () => {
+        setChatModalVisible(true);
+    };
+
+    const closeChatModal = () => {
+        setChatModalVisible(false);
+    };
+
     const deleteChat = async () => {
         try {
             await AsyncStorage.removeItem(`messages_${user.id}`);
-            setMessages([]); // Clear messages from state
-            onDelete(user.id); // Call the onDelete function to remove user from HomeScreen
-            closeModal();
+            setMessages([]); 
+            onDelete(user.id); 
+            closeChatModal();
         } catch (error) {
             console.error('Failed to delete messages:', error);
         }
@@ -103,37 +112,34 @@ const ChatScreen = ({ route }: ChatScreenProps) => {
                     marginTop: 5,
                     borderTopWidth: 0,
                 }} 
+                textInputProps={{
+                    returnKeyType: 'send', 
+                    blurOnSubmit: true, 
+                    onSubmitEditing: () => {
+                        if (props.text && props.onSend) {
+                            props.onSend({ text: props.text.trim() }, true); 
+                            props.text = ''; 
+                        }
+                    },
+                    multiline: false, 
+                }}
             />
         );
     };
 
     const handleMessagePress = (message: IMessage) => {
-        setSelectedMessage(message);
-        setEmojiArrayVisible(true); // Show the emoji array
+        openEmojiDeleteModal(message);
     };
 
     const renderMessage = (props: { currentMessage: IMessage }) => {
-        const currentMessage: any = props.currentMessage;
-        const emoji = currentMessage.emoji || ''; // Get emoji from message if it exists
+        const currentMessage: IMessage = props.currentMessage;
+        const emoji = currentMessage.emoji || ''; 
 
         return (
             <TouchableOpacity onPress={() => handleMessagePress(currentMessage)}>
                 <Message {...props} />
-                {selectedMessage && selectedMessage._id === currentMessage._id && emojiArrayVisible && (
-                    <View style={styles.messageOptions}>
-                        {/* Display emoji array */}
-                        {emojiArray.map((emoji, index) => (
-                            <TouchableOpacity key={index} onPress={() => handleEmojiSelect(currentMessage._id, emoji)}>
-                                <Text style={styles.optionText}>{emoji}</Text>
-                            </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity onPress={() => handleDeleteMessage(selectedMessage._id)}>
-                            <Text style={styles.optionText}>Delete</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
                 {emoji && (
-                    <Text style={styles.emojiText}>{emoji}</Text> // Display the emoji next to the message
+                    <Text style={styles.emojiText}>{emoji}</Text> 
                 )}
             </TouchableOpacity>
         );
@@ -143,22 +149,23 @@ const ChatScreen = ({ route }: ChatScreenProps) => {
         const updatedMessages = messages.filter(message => message._id !== messageId);
         setMessages(updatedMessages);
         await AsyncStorage.setItem(`messages_${user.id}`, JSON.stringify(updatedMessages));
-        setSelectedMessage(null); // Reset selected message
-        setEmojiArrayVisible(false); 
+        setSelectedMessage(null);
+        setModalVisible(false); 
     };
 
-    //  handle emoji selection
-    const handleEmojiSelect = async (messageId: string, emoji: string) => {
-        const updatedMessages = messages.map(message => {
-            if (message._id === messageId) {
-                return { ...message, emoji }; // Add the emoji to the message
-            }
-            return message;
-        });
-        setMessages(updatedMessages);
-        await AsyncStorage.setItem(`messages_${user.id}`, JSON.stringify(updatedMessages));
-        setSelectedMessage(null); // Reset selected message
-        setEmojiArrayVisible(false); // Hide the emoji array after selection
+    const handleEmojiSelect = async (emoji: string) => {
+        if (selectedMessage) {
+            const updatedMessages = messages.map(message => {
+                if (message._id === selectedMessage._id) {
+                    return { ...message, emoji };
+                }
+                return message;
+            });
+            setMessages(updatedMessages);
+            await AsyncStorage.setItem(`messages_${user.id}`, JSON.stringify(updatedMessages));
+            setSelectedMessage(null);
+            setModalVisible(false);
+        }
     };
 
     const renderSend = (props: any) => {
@@ -185,7 +192,7 @@ const ChatScreen = ({ route }: ChatScreenProps) => {
                     <Text style={styles.initialsText}>{initials}</Text>
                 </View>
                 <Text style={styles.headerText}>{user.firstName} {user.lastName}</Text>
-                <TouchableOpacity onPress={openModal}>
+                <TouchableOpacity onPress={openChatModal}>
                     <View style={styles.imageBox1}>
                         <Image source={Images.threeDot} style={styles.imagePhoto} />
                     </View>
@@ -206,12 +213,45 @@ const ChatScreen = ({ route }: ChatScreenProps) => {
                     renderSend={renderSend}
                 />
             </View>
-            <ChatScreenModal visible={modalVisible} onClose={closeModal} onDelete={deleteChat} />
+
+            <ChatScreenModal visible={chatModalVisible} onClose={closeChatModal} onDelete={deleteChat} />
+
+            <Modal
+                visible={modalVisible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Select Emoji</Text>
+                        <FlatList
+                            data={emojiArray}
+                            horizontal
+                            keyExtractor={(item) => item}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity onPress={() => handleEmojiSelect(item)}>
+                                    <Text style={styles.modalEmoji}>{item}</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                        <TouchableOpacity onPress={() => handleDeleteMessage(selectedMessage?._id)}>
+                            <Text style={styles.deleteText}>Delete Message</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={closeModal}>
+                            <Text style={styles.closeModalText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaProvider>
     );
 };
 
 export default ChatScreen;
+
+
+
 
 
 

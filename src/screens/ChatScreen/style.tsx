@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
   chatContainer: {
     marginHorizontal: 20,
     marginBottom: 20,
-    backgroundColor: "red",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -125,6 +124,44 @@ const styles = StyleSheet.create({
     top: 5,
     fontSize: 20,
   },
+
+  modalContainer: {
+    flex:1,
+    justifyContent: 'flex-end',
+},
+modalContent: {
+    backgroundColor: '#FFF',
+    padding: 10,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    justifyContent:"center",
+    alignItems:"center",
+    paddingVertical:40,
+},
+modalTitle: {
+    fontSize:22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+   
+},
+modalEmoji: {
+    fontSize: 30,
+    marginHorizontal: 10,
+},
+deleteText: {
+    color: 'red',
+    fontSize: 23,
+    textAlign: 'center',
+    fontWeight:"600",
+    padding:10,
+},
+closeModalText: {
+    fontSize: 23,
+    padding:10,
+    textAlign: 'center',
+    color: '#007BFF',
+    fontWeight:"600",
+},
   
 });
 

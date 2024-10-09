@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
-import { useNavigation, NavigationProp, useIsFocused } from '@react-navigation/native';
+import { useNavigation, NavigationProp, useIsFocused, CommonActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './style';
 import Header from '../../component/header';
@@ -21,22 +21,22 @@ type RootStackParamList = {
     Chat: { user: User; onDelete: (userId: string) => void };
 };
 
-const HomeScreen= () => {
+const HomeScreen = () => {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [chattedUsers, setChattedUsers] = useState<User[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
+    const [searchQuery, setSearchQuery] = useState<string>(''); 
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-    const isFocused =useIsFocused()
+    const isFocused = useIsFocused()
 
     useEffect(() => {
         const loadChattedUsers = async () => {
             const chats = await Promise.all(
                 userData.page.users.map(async (user: any) => {
                     const messages = await AsyncStorage.getItem(`messages_${user.id}`);
-                    return messages ? user : null; // Return user if chat exists
+                    return messages ? user : null; 
                 })
             );
-            setChattedUsers(chats.filter(Boolean) as User[]); // Filter out null values
+            setChattedUsers(chats.filter(Boolean) as User[]); 
         };
 
         loadChattedUsers();
@@ -47,7 +47,7 @@ const HomeScreen= () => {
     };
 
     const handleDeleteUser = (userId: string) => {
-        setChattedUsers(prevUsers => prevUsers.filter(user => user.id !== userId)); // Remove user from the state
+        setChattedUsers(prevUsers => prevUsers.filter(user => user.id !== userId)); 
     };
 
     const handleStartChat = () => {
@@ -62,7 +62,19 @@ const HomeScreen= () => {
         return (
             <TouchableOpacity
                 style={styles.resultContainer}
-                onPress={() => navigation.navigate('Chat', { user: item, onDelete: handleDeleteUser })} // Pass handleDeleteUser
+                onPress={() =>
+                    navigation.dispatch(
+                        CommonActions.reset({
+                            index: 0,
+                            routes: [
+                                {
+                                    name: 'Chat',
+                                    params: { user: item, onDelete: handleDeleteUser }
+                                }
+                            ]
+                        })
+                    )
+                }
             >
                 <View style={[styles.initialsContainer, { backgroundColor: randomBackgroundColor }]}>
                     <Text style={styles.initialsText}>{`${firstInitial}${lastInitial}`}</Text>
@@ -72,7 +84,6 @@ const HomeScreen= () => {
         );
     };
 
-    // Filter users based on search query
     const filteredUsers = chattedUsers.filter(user =>
         `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
     );

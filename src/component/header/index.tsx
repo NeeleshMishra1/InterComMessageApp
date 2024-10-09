@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { View, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, NavigationProp , CommonActions} from '@react-navigation/native';
 import styles from './style';
 import Images from '../../assets';
 import strings from '../../utils/strings';
@@ -13,9 +13,17 @@ type RootStackParamList = {
 const Header= () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const handleHome = () => {
-    navigation.navigate('Search');
-  };
+ 
+
+const handleHome = () => {
+    navigation.dispatch(
+        CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Search' }],
+        })
+    );
+};
+
 
   return (
     <SafeAreaView style={styles.container1}>
