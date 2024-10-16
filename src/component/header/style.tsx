@@ -8,7 +8,8 @@ const styles = StyleSheet.create({
     headerBox: {
         height: 60,
         flexDirection: "row",
-        paddingHorizontal: 20,
+        paddingHorizontal: 15,
+        justifyContent:"space-between"
     },
     imageBox: {
         width: 45,
@@ -25,7 +26,6 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         alignItems: "center",
         justifyContent: "center",
-        left: 100,
     },
     message: {
         paddingHorizontal: 20,

@@ -14,6 +14,8 @@ type User = {
     lastName: string;
 };
 
+
+
 type ChatScreenProps = {
     route: {
         params: {
@@ -27,8 +29,8 @@ type MessagesState = IMessage[];
 
 const ChatScreen = ({ route }: ChatScreenProps) => {
     const [messages, setMessages] = React.useState<MessagesState>([]);
-    const [modalVisible, setModalVisible] = React.useState<boolean>(false); // Emoji/Message modal
-    const [chatModalVisible, setChatModalVisible] = React.useState<boolean>(false); // Chat delete modal
+    const [modalVisible, setModalVisible] = React.useState<boolean>(false); 
+    const [chatModalVisible, setChatModalVisible] = React.useState<boolean>(false); 
     const [selectedMessage, setSelectedMessage]:any = React.useState<IMessage | null>(null);
 
     const { user, onDelete } = route.params; 
@@ -114,14 +116,14 @@ const ChatScreen = ({ route }: ChatScreenProps) => {
                 }} 
                 textInputProps={{
                     returnKeyType: 'send', 
-                    blurOnSubmit: true, 
+                     blurOnSubmit: true, 
                     onSubmitEditing: () => {
                         if (props.text && props.onSend) {
                             props.onSend({ text: props.text.trim() }, true); 
                             props.text = ''; 
                         }
                     },
-                    multiline: false, 
+                      multiline: false, 
                 }}
             />
         );

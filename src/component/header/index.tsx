@@ -28,14 +28,14 @@ const handleHome = () => {
   return (
     <SafeAreaView style={styles.container1}>
       <View style={styles.headerBox}>
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <View style={styles.imageBox}>
             <Image
               source={Images.arrow}
               style={styles.imagePhoto}
             />
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View>
           <Text style={styles.message}>{strings.message}</Text>
           <Text style={styles.message1}>45 Contacts</Text>

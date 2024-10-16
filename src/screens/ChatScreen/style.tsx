@@ -141,7 +141,7 @@ modalContent: {
 modalTitle: {
     fontSize:22,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
    
 },
 modalEmoji: {
@@ -154,6 +154,7 @@ deleteText: {
     textAlign: 'center',
     fontWeight:"600",
     padding:10,
+    marginTop: 10,
 },
 closeModalText: {
     fontSize: 23,

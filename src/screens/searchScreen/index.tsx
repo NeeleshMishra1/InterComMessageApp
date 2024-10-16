@@ -30,7 +30,7 @@ const SearchPage = () => {
   const handleSearch = (text: string) => {
     setSearchTerm(text);
     if (text.trim() === '') {
-      setFilteredData([]); // Reset to empty if the search term is empty
+      setFilteredData([]); 
     } else {
       const filtered = userData.page.users.filter((user: User) =>
         user.firstName.toLowerCase().includes(text.toLowerCase()) ||
